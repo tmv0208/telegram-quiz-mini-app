@@ -169,12 +169,53 @@
       <div class="title">Тест завершён!</div>
       <div class="result-score" id="result-score">0 / 10</div>
       <div class="result-comment" id="result-comment">Отличный результат!</div>
-        <button type="button" id="sendResultBtn" onclick="sendResult()">
+        <button type="button" id="sendResultBtn">
           Отправить результат в Telegram
         </button>
-       <div class="status" id="sendStatus"></div>
+       <pre id="sendStatus">Кнопка ещё не нажималась</pre>
     </div>
   </div>
+  <script>
+    const tg = window.Telegram && window.Telegram.WebApp;
+
+if (tg) {
+  tg.ready();
+  tg.expand();
+}
+
+document.getElementById("sendResultBtn").addEventListener("click", () => {
+  const status = document.getElementById("sendStatus");
+
+  try {
+    if (!tg || typeof tg.sendData !== "function") {
+      status.textContent = "Ошибка: sendData недоступен.";
+      return;
+    }
+
+    const testData = {
+      quiz_id: "main",
+      score: 1,
+      total: 1,
+      time: new Date().toISOString()
+    };
+
+    const data = JSON.stringify(testData);
+
+    status.textContent = "Отправляю: " + data;
+
+    tg.sendData(data);
+
+    status.textContent = "Отправлено. Ждём обновление в консоли бота...";
+
+    setTimeout(() => {
+      tg.close();
+    }, 1500);
+
+  } catch (error) {
+    status.textContent = "JavaScript ошибка: " + error.message;
+  }
+});
+  </script>
   <script src="app.js?v=777"></script>
 </body>
 </html>
