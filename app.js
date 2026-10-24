@@ -205,13 +205,15 @@ function sendResult() {
       const statusEl = document.getElementById("sendStatus");
       statusEl.textContent = "Отправляю...";
 
-      // Получаем quiz_id из параметров запуска Telegram Mini App (start_param) или используем дефолтный
-      const quizId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? tg.initDataUnsafe.start_param;
+      // Исправлено: добавлено двоеточие и значение по умолчанию ('main')
+      const quizId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) 
+        ? tg.initDataUnsafe.start_param 
+        : "main";
 
       const result = {
         quiz_id: quizId,
         score: score,
-        total: questions.length, // Используем массив questions вместо несуществующего quiz.questions
+        total: questions.length,
         finished_at: new Date().toISOString()
       };
 
