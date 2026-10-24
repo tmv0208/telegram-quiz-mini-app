@@ -166,7 +166,10 @@
       <div class="title">Тест завершён!</div>
       <div class="result-score" id="result-score">0 / 10</div>
       <div class="result-comment" id="result-comment">Отличный результат!</div>
-      <button class="btn-send" id="btn-send" style="display:block;" onclick="sendResult()">Отправить результат в Telegram</button>
+        <button type="button" id="sendResultBtn">
+          Отправить результат в Telegram
+        </button>
+       <div class="status" id="sendStatus"></div>
     </div>
   </div>
 
@@ -367,13 +370,28 @@
 
       document.getElementById("result-comment").innerText = comment;
     }
+      const btn = document.getElementById("sendResultBtn");
+      const status = document.getElementById("sendStatus");
+      btn.addEventListener("click", () => {
+        status.textContent = "Отправляю...";
 
-    function sendResult() {
-      const data = JSON.stringify({
-        score: score,
-        total: questions.length,
-        percentage: Math.round((score / questions.length) * 100)
-      });
+        // Проверяем, что открыто именно Mini App
+        if (!tg || typeof tg.sendData !== "function") {
+          status.textContent =
+            "Ошибка: страница открыта не как Telegram Mini App. " +
+            "Открывайте квиз по ссылке вида https://t.me/бот/приложение?startapp=...";
+          return;
+        }
+
+        const data = JSON.stringify(result);
+
+        // sendData имеет ограничение по размеру.
+        // Лучше отправлять только короткий результат.
+        if (data.length > 4000) {
+          status.textContent =
+            "Ошибка: результат слишком большой. Отправляйте только score и total.";
+          return;
+        }
 
         try {
           tg.sendData(data);
@@ -386,7 +404,7 @@
         } catch (error) {
           status.textContent = "Ошибка sendData: " + error.message;
         }
-    }
+      });
 
     loadQuestion();
   </script>
