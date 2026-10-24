@@ -380,7 +380,8 @@
       const result = {
         quiz_id: quiz.id,
         score: score,
-        total: quiz.questions.length
+        total: quiz.questions.length,
+        finished_at: new Date().toISOString()
       };
 
       const data = JSON.stringify(result);
