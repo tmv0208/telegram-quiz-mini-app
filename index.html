@@ -154,7 +154,6 @@
 <body>
 
   <div class="container">
-    <pre id="tgDebug">Загрузка...</pre>
     <div id="quiz-screen">
       <div class="header">
         <div class="title">Физика — это просто</div>
@@ -176,26 +175,6 @@
        <div class="status" id="sendStatus"></div>
     </div>
   </div>
-  <script>
-    const tg = window.Telegram && window.Telegram.WebApp;
-
-    if (tg) {
-      tg.ready();
-      tg.expand();
-    }
-
-    const debug = document.getElementById("tgDebug");
-
-    debug.textContent = [
-      "Telegram available: " + (!!window.Telegram),
-      "WebApp available: " + (!!tg),
-      "sendData available: " + (!!(tg && typeof tg.sendData === "function")),
-      "start_param: " + ((tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || "null"),
-      "location.search: " + (window.location.search || "empty")
-    ].join("\n");
-
-    // дальше ваш код квиза
-  </script>
   <script src="app.js?v=666"></script>
 </body>
 </html>
