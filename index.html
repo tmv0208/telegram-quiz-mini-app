@@ -375,11 +375,17 @@
         percentage: Math.round((score / questions.length) * 100)
       });
 
-      if (tg && tg.sendData) {
-        tg.sendData(data);
-      } else {
-        alert(`Результат: ${score} из ${questions.length}`);
-      }
+        try {
+          tg.sendData(data);
+          status.textContent = "Результат отправлен боту. Закрываю Mini App...";
+
+          setTimeout(() => {
+            tg.close();
+          }, 800);
+
+        } catch (error) {
+          status.textContent = "Ошибка sendData: " + error.message;
+        }
     }
 
     loadQuestion();
