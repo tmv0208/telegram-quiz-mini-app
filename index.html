@@ -1,105 +1,181 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-
-  <title>Mini App Test</title>
-
+  <title>Физика — это просто | Квиз</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
   <style>
-    body {
+    :root {
+      --bg-color: var(--tg-theme-bg-color, #17212b);
+      --text-color: var(--tg-theme-text-color, #f5f5f5);
+      --secondary-bg: var(--tg-theme-secondary-bg-color, #232e3c);
+      --button-color: var(--tg-theme-button-color, #2481cc);
+      --button-text: var(--tg-theme-button-text-color, #ffffff);
+      --hint-color: var(--tg-theme-hint-color, #7f8c9d);
+      --correct-color: #2e7d32;
+      --incorrect-color: #c62828;
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
-      padding: 20px;
-      font-family: system-ui, sans-serif;
-      background: var(--tg-theme-bg-color, #fff);
-      color: var(--tg-theme-text-color, #000);
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    button {
-      display: block;
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .container {
       width: 100%;
-      padding: 14px;
-      margin-top: 16px;
-      border: 0;
-      border-radius: 12px;
-      background: var(--tg-theme-button-color, #3390ec);
-      color: var(--tg-theme-button-text-color, #fff);
-      font-size: 16px;
+      max-width: 500px;
+      background-color: var(--secondary-bg);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
-    pre {
-      white-space: pre-wrap;
-      word-break: break-word;
-      background: rgba(0, 0, 0, 0.05);
-      padding: 12px;
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+
+    .progress {
+      font-size: 14px;
+      color: var(--hint-color);
+    }
+
+    .question-text {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .btn-option {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 14px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      line-height: 1.3;
+    }
+
+    .btn-option:active {
+      opacity: 0.8;
+    }
+
+    .btn-option.correct {
+      background-color: var(--correct-color) !important;
+      color: #ffffff !important;
+      border-color: var(--correct-color);
+    }
+
+    .btn-option.incorrect {
+      background-color: var(--incorrect-color) !important;
+      color: #ffffff !important;
+      border-color: var(--incorrect-color);
+    }
+
+    .explanation {
+      background-color: var(--bg-color);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--text-color);
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .btn-next, .btn-send {
+      width: 100%;
+      background-color: var(--button-color);
+      color: var(--button-text);
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: none;
+      text-align: center;
+    }
+
+    .result-screen {
+      text-align: center;
+      display: none;
+    }
+
+    .result-score {
+      font-size: 48px;
+      font-weight: 800;
+      margin: 20px 0 10px;
+      color: var(--button-color);
+    }
+
+    .result-comment {
+      font-size: 16px;
+      color: var(--hint-color);
+      margin-bottom: 24px;
     }
   </style>
 </head>
 <body>
-  <h2>Mini App Test</h2>
 
-  <pre id="debug">Загрузка...</pre>
+  <div class="container">
+    <div id="quiz-screen">
+      <div class="header">
+        <div class="title">Физика — это просто</div>
+        <div class="progress" id="progress">1 из 10</div>
+      </div>
+      <div class="question-text" id="question-text">Вопрос...</div>
+      <div class="options" id="options"></div>
+      <div class="explanation" id="explanation"></div>
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()">Следующий вопрос</button>
+    </div>
 
-  <button type="button" id="sendBtn">
-    Отправить тестовый результат
-  </button>
+    <div id="result-screen" class="result-screen">
+      <div class="title">Тест завершён!</div>
+      <div class="result-score" id="result-score">0 / 10</div>
+      <div class="result-comment" id="result-comment">Отличный результат!</div>
+        <button type="button" id="sendResultBtn" onclick="sendResult()">
+          Отправить результат в Telegram
+        </button>
+       <div class="status" id="sendStatus"></div>
+    </div>
+  </div>
 
-  <pre id="status"></pre>
-
-  <script>
-    const tg = window.Telegram && window.Telegram.WebApp;
-
-    if (tg) {
-      tg.ready();
-      tg.expand();
-    }
-
-    const debug = document.getElementById("debug");
-    const status = document.getElementById("status");
-    const sendBtn = document.getElementById("sendBtn");
-
-    debug.textContent = [
-      "Telegram available: " + (!!window.Telegram),
-      "WebApp available: " + (!!tg),
-      "sendData available: " + (!!(tg && typeof tg.sendData === "function")),
-      "start_param: " + ((tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || "null"),
-      "location.search: " + (window.location.search || "empty")
-    ].join("\n");
-
-    sendBtn.addEventListener("click", () => {
-      status.textContent = "";
-
-      if (!tg || typeof tg.sendData !== "function") {
-        status.textContent = "Ошибка: страница открыта не как Telegram Mini App.";
-        return;
-      }
-
-      const testData = {
-        quiz_id: "main",
-        score: 1,
-        total: 1,
-        finished_at: new Date().toISOString()
-      };
-
-      try {
-        tg.sendData(JSON.stringify(testData));
-        status.textContent = "Тестовый результат отправлен. Закрываю Mini App...";
-
-        setTimeout(() => {
-          tg.close();
-        }, 800);
-
-      } catch (error) {
-        status.textContent = "Ошибка sendData: " + error.message;
-      }
-    });
-  </script>
+  <script src="app.js?v=666"></script>
 </body>
 </html>
