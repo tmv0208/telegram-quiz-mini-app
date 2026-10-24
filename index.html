@@ -192,12 +192,11 @@ document.getElementById("sendResultBtn").addEventListener("click", () => {
       return;
     }
 
-    const testData = {
-      quiz_id: "main",
-      score: 1,
-      total: 1,
-      time: new Date().toISOString()
-    };
+const testData = {
+  quiz_id: "main",
+  score: 1,
+  total: 1
+};
 
     const data = JSON.stringify(testData);
 
