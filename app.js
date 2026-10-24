@@ -196,37 +196,43 @@
       document.getElementById("result-comment").innerText = comment;
     }
 
-    function sendResult() {
+function sendResult() {
       if (!tg || typeof tg.sendData !== "function") {
         alert("Страница открыта не как Telegram Mini App.");
         return;
       }
-      status.textContent = "Отправляю...";
+
+      const statusEl = document.getElementById("sendStatus");
+      statusEl.textContent = "Отправляю...";
+
+      // Получаем quiz_id из параметров запуска Telegram Mini App (start_param) или используем дефолтный
+      const quizId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? tg.initDataUnsafe.start_param;
+
       const result = {
-        quiz_id: quiz.id,
+        quiz_id: quizId,
         score: score,
-        total: quiz.questions.length,
+        total: questions.length, // Используем массив questions вместо несуществующего quiz.questions
         finished_at: new Date().toISOString()
       };
 
       const data = JSON.stringify(result);
 
       if (data.length > 4000) {
-        alert("Результат слишком большой. Отправляйте только score и total.");
+        alert("Результат слишком большой.");
         return;
       }
 
-        try {
-          tg.sendData(data);
-          status.textContent = "Результат отправлен боту. Закрываю Mini App...";
+      try {
+        tg.sendData(data);
+        statusEl.textContent = "Результат отправлен боту. Закрываю Mini App...";
 
-          setTimeout(() => {
-            tg.close();
-          }, 800);
+        setTimeout(() => {
+          tg.close();
+        }, 800);
 
-        } catch (error) {
-          status.textContent = "Ошибка sendData: " + error.message;
-        }
+      } catch (error) {
+        statusEl.textContent = "Ошибка sendData: " + error.message;
+      }
     }
     loadQuestion();
   </script>
