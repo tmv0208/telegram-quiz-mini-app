@@ -1,3 +1,4 @@
+<script>
 const tg = window.Telegram ? window.Telegram.WebApp : null;
 if (tg) {
   tg.ready();
@@ -237,3 +238,4 @@ function sendResult() {
 
 // Запуск при загрузке
 loadQuestion();
+  </script>
